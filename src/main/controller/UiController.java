@@ -3,10 +3,15 @@ package main.controller;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
@@ -22,10 +27,13 @@ public class UiController {
     @FXML
     private TextField out;
     @FXML
+    private TextField key;
+    @FXML
     private ToggleGroup type;
 
     private String inPath;
     private String outPath;
+    private String keyStr;
 
     private EncryptionController cryptController;
 
@@ -42,7 +50,7 @@ public class UiController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Открытие файла");
         File file = fileChooser.showOpenDialog(null);
-        if (file.exists()){
+        if (file!=null && file.exists()){
             in.setText(file.getAbsolutePath());
         }
     }
@@ -54,7 +62,7 @@ public class UiController {
         }
 
         try {
-            cryptController.encryption(inPath, outPath);
+            cryptController.encryption(inPath, outPath,keyStr);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,"Готово!");
             alert.show();
 
@@ -77,7 +85,7 @@ public class UiController {
         }
 
         try {
-            cryptController.decryption(inPath, outPath);
+            cryptController.decryption(inPath, outPath,keyStr);
             Alert alert = new Alert(Alert.AlertType.INFORMATION,"Готово!");
             alert.show();
         } catch (IOException e) {
@@ -87,22 +95,42 @@ public class UiController {
         }
     }
 
-    public void OnOpenFile(ActionEvent actionEvent) {
-        if (Files.exists(Paths.get(out.getText().trim()))){
-            File file = new File(out.getText().trim());
-            try {
-                if (file.getParentFile()==null){
-                    return;
+    public void OnOpenFolder(ActionEvent actionEvent) {
+        if (out.getText().trim().isEmpty()){
+           DirectoryChooser directoryChooser = new DirectoryChooser();
+           directoryChooser.setTitle("Выбор папки сохранения");
+           File file = directoryChooser.showDialog(null);
+           if (file!=null && file.exists()){
+               out.setText(file.getAbsolutePath() + "\\encryptedfile");
+           }
+        }else {
+            if (Files.exists(Paths.get(out.getText().trim()))) {
+                File file = new File(out.getText().trim());
+                try {
+                    if (file.getParentFile() == null) {
+                        return;
+                    }
+                    Desktop.getDesktop().open(file.getParentFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                Desktop.getDesktop().open(file.getParentFile());
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
     private boolean validate(){
         inPath = in.getText().trim();
         outPath = out.getText().trim();
+        keyStr = key.getText().trim();
+        if (keyStr.isEmpty()){
+            Alert alert = new Alert(Alert.AlertType.WARNING,"Введите ключ!");
+            alert.show();
+        }
+        if (keyStr.length()<4){
+            while (keyStr.length()<4){
+                keyStr+="0";
+            }
+        }
+
         if (in.getText().trim().isEmpty() || out.getText().trim().isEmpty()){
             Alert alert = new Alert(Alert.AlertType.WARNING,"Не все файлы выбраны!");
             alert.show();
@@ -130,5 +158,6 @@ public class UiController {
         }
         return true;
     }
+
 
 }

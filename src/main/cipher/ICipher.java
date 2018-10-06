@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface ICipher {
 
-    void decryption(DataInputStream in, DataOutputStream out) throws IOException;
+    void decryption(int[] keyArr, DataInputStream in, DataOutputStream out) throws IOException;
 
-    void encryption(DataInputStream in, DataOutputStream out) throws IOException;
+    void encryption(int[] keyArr, DataInputStream in, DataOutputStream out) throws IOException;
 }

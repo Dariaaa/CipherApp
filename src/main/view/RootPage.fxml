@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import java.net.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.text.*?>
 
-<GridPane alignment="CENTER" hgap="250.0" prefHeight="295.0" prefWidth="600.0" vgap="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="main.controller.UiController">
+<GridPane alignment="CENTER" gridLinesVisible="false" hgap="250.0" prefHeight="301.0" prefWidth="586.0" vgap="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="main.controller.UiController">
   <children>
-    <SplitPane dividerPositions="" focusTraversable="true" orientation="VERTICAL" prefHeight="250.0" prefWidth="600.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
-      <items>
+    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+      <bottom>
+        <Pane prefHeight="64.0" prefWidth="600.0">
+          <children>
+            <Button fx:id="encrypt" layoutX="38.0" layoutY="19.0" mnemonicParsing="false" onAction="#DoEncryption" prefWidth="182.0" styleClass="danger" text="Зашифровать" />
+            <Button fx:id="decrypt" layoutX="367.0" layoutY="14.0" mnemonicParsing="false" onAction="#DoDecryption" prefWidth="182.0" styleClass="success" text="Расшифровать" />
+          </children>
+        </Pane>
+      </bottom>
+      <center>
         <Pane prefHeight="183.0" prefWidth="576.0">
           <children>
-            <TextField fx:id="in" layoutX="36.0" layoutY="99.0" prefWidth="375.0" />
-            <TextField fx:id="out" layoutX="36.0" layoutY="191.0" prefWidth="375.0" />
-            <Button fx:id="encrypt" layoutX="291.0" layoutY="236.0" mnemonicParsing="false" onAction="#DoEncryption" text="Зашифровать" />
-            <Button fx:id="selectFile" layoutX="426.0" layoutY="99.0" mnemonicParsing="false" onAction="#OnSelectFile" text="Выбрать файл" />
-            <Button fx:id="swap" layoutX="191.0" layoutY="136.0" mnemonicParsing="false" onAction="#OnSwap" prefWidth="85.0" text="&lt;-&gt;" wrapText="false" />
-            <Button fx:id="decrypt" layoutX="426.0" layoutY="236.0" mnemonicParsing="false" onAction="#DoDecryption" text="Расшифровать" />
-            <Label layoutX="36.0" layoutY="76.0" text="Выберите файл для шифрования" />
-            <Label layoutX="36.0" layoutY="171.0" text="Выберите место сохранения" />
-            <Label layoutX="38.0" layoutY="23.0" text="Алгоритм шифрования:">
+            <TextField fx:id="key" layoutX="36.0" layoutY="74.0" prefHeight="25.951171875" prefWidth="506.0" />
+            <TextField fx:id="in" layoutX="37.0" layoutY="134.0" prefWidth="375.0" />
+            <Button fx:id="selectFile" layoutX="427.0" layoutY="134.0" mnemonicParsing="false" onAction="#OnSelectFile" styleClass="primary" text="Выбрать файл" />
+            <TextField fx:id="out" layoutX="37.0" layoutY="201.0" prefWidth="375.0" />
+            <Button id="openFile" layoutX="427.0" layoutY="201.0" mnemonicParsing="false" onAction="#OnOpenFolder" styleClass="primary" text="Открыть папку" />
+            <Button fx:id="swap" layoutX="362.0" layoutY="168.0" mnemonicParsing="false" onAction="#OnSwap" prefWidth="50.0" styleClass="warning" text="&lt;&gt;" wrapText="false" />
+            <Label layoutX="37.0" layoutY="111.0" text="Выберите файл для шифрования" />
+            <Label layoutX="37.0" layoutY="181.0" text="Выберите место сохранения" />
+            <Label layoutX="36.0" layoutY="14.0" text="Алгоритм:">
               <font>
                 <Font size="20.0" />
               </font>
             </Label>
-            <RadioButton fx:id="wake" layoutX="280.0" layoutY="30.0" mnemonicParsing="false" selected="true" text="Wake" userData="0">
+            <RadioButton fx:id="wake" layoutX="149.0" layoutY="21.0" mnemonicParsing="false" prefHeight="19.951171875" selected="true" text="Wake" userData="0">
               <toggleGroup>
                 <ToggleGroup fx:id="type" />
               </toggleGroup>
             </RadioButton>
             <RadioButton id="wake" disable="true" layoutX="365.0" layoutY="30.0" mnemonicParsing="false" selected="false" text="?" toggleGroup="$type" userData="1" visible="false" />
             <RadioButton id="wake" disable="true" layoutX="446.0" layoutY="30.0" mnemonicParsing="false" selected="false" text="?" toggleGroup="$type" userData="2" visible="false" />
-            <Button id="openFile" layoutX="426.0" layoutY="191.0" mnemonicParsing="false" onAction="#OnOpenFile" text="Открыть" />
+            <Label layoutX="36.0" layoutY="54.0" text="Ключ" />
           </children>
         </Pane>
-      </items>
-    </SplitPane>
+      </center>
+    </BorderPane>
   </children>
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
@@ -44,4 +53,7 @@
   <rowConstraints>
     <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
   </rowConstraints>
+  <stylesheets>
+    <URL value="@bs3.css" />
+  </stylesheets>
 </GridPane>

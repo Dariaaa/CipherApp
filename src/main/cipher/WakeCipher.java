@@ -1,6 +1,5 @@
 package main.cipher;
 
-import main.cipher.ICipher;
 import main.util.DataStreamUtil;
 
 import java.io.DataInputStream;
@@ -21,20 +20,14 @@ public class WakeCipher implements ICipher {
             0x9ee27cf3
     };
 
-    private int[] key;
-
-    public WakeCipher(int [] key){
-        this.key = key;
+    @Override
+    public void decryption(int[] key, DataInputStream in, DataOutputStream out) throws IOException {
+        encryption(DEC_MOD, in, out, key);
     }
 
     @Override
-    public void decryption(DataInputStream in, DataOutputStream out) throws IOException {
-        encryption(DEC_MOD, in, out);
-    }
-
-    @Override
-    public void encryption(DataInputStream in, DataOutputStream out) throws IOException {
-        encryption(ENC_MOD, in, out);
+    public void encryption(int[] key, DataInputStream in, DataOutputStream out) throws IOException {
+        encryption(ENC_MOD, in, out, key);
     }
 
     private int[] generationSbox(int key[]) {
@@ -68,7 +61,7 @@ public class WakeCipher implements ICipher {
         return table;
     }
 
-    private void encryption(int mod, DataInputStream in, DataOutputStream out) throws IOException {
+    private void encryption(int mod, DataInputStream in, DataOutputStream out, int[] key) throws IOException {
         int table[] = generationSbox(key);
         int a = key[0];
         int b = key[1];
