@@ -1,14 +1,14 @@
 package main.cipher;
 
+import javafx.scene.control.Alert;
+import main.controller.EncryptionController;
+import main.controller.UiController;
 import main.util.DataStreamUtil;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 
-public class WakeCipher implements ICipher {
-    private static final int ENC_MOD = 1;
-    private static final int DEC_MOD = 2;
+public class WakeCipher extends ICipher {
+
     private static int s[] = {
             0x726a8f3b,
             0xe69a3b5c,
@@ -20,18 +20,9 @@ public class WakeCipher implements ICipher {
             0x9ee27cf3
     };
 
-    @Override
-    public void decryption(int[] key, DataInputStream in, DataOutputStream out) throws IOException {
-        encryption(DEC_MOD, in, out, key);
-    }
-
-    @Override
-    public void encryption(int[] key, DataInputStream in, DataOutputStream out) throws IOException {
-        encryption(ENC_MOD, in, out, key);
-    }
 
     private int[] generationSbox(int key[]) {
-        int [] table = new int[257];
+        int[] table = new int[257];
         int x, z;
 
         for (int i = 0; i < 4; i++) {
@@ -72,14 +63,14 @@ public class WakeCipher implements ICipher {
             int outData = d ^ data;
 
             DataStreamUtil.saveWordToFile(outData, out);
-            if (mod == ENC_MOD) {
-                a = functionM(a, outData,table);
+            if (mod == EncryptionController.ENC_MOD) {
+                a = functionM(a, outData, table);
             } else {
-                a = functionM(a, data,table);
+                a = functionM(a, data, table);
             }
-            b = functionM(b, a,table);
-            c = functionM(c, b,table);
-            d = functionM(d, c,table);
+            b = functionM(b, a, table);
+            c = functionM(c, b, table);
+            d = functionM(d, c, table);
             data = DataStreamUtil.getWordFromFile(in);
         }
         in.close();
@@ -88,5 +79,20 @@ public class WakeCipher implements ICipher {
 
     private int functionM(int x, int y, int table[]) {
         return ((x + y) >> 8) ^ table[(x + y) & 0xff];
+    }
+
+    @Override
+    public void run() {
+        try {
+            encryption(mode, new DataInputStream(new FileInputStream(inPath)),
+                    new DataOutputStream(new FileOutputStream(outPath)), key);
+
+            uiController.showSimpleAlert(Alert.AlertType.INFORMATION,"Готово!");
+            System.out.println("finish");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            uiController.showSimpleAlert(Alert.AlertType.ERROR,"Произошла ошибка во время выполнения операции!");
+        }
     }
 }

@@ -1,17 +1,14 @@
 package main.controller;
 
-import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
@@ -34,16 +31,16 @@ public class UiController {
     private String inPath;
     private String outPath;
     private String keyStr;
+    private int cipherType;
 
     private EncryptionController cryptController;
 
     public void initialize(){
-        cryptController = new EncryptionController();
-        cryptController.setType(EncryptionController.TYPE_WAKE);
+        cryptController = new EncryptionController(this);
 
         type.selectedToggleProperty().addListener(
                 (observable, oldValue, newValue) ->
-                        cryptController.setType((Integer)type.getSelectedToggle().getUserData()));
+                        cipherType = (Integer)type.getSelectedToggle().getUserData());
     }
 
     public void OnSelectFile(ActionEvent actionEvent) {
@@ -60,17 +57,7 @@ public class UiController {
         if (!validate()){
             return;
         }
-
-        try {
-            cryptController.encryption(inPath, outPath,keyStr);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION,"Готово!");
-            alert.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR,"Произошла ошибка во время выполнения операции!");
-            alert.show();
-        }
+        cryptController.encryption(inPath,outPath,keyStr,cipherType,EncryptionController.ENC_MOD);
     }
 
     public void OnSwap(ActionEvent actionEvent) {
@@ -83,16 +70,8 @@ public class UiController {
         if (!validate()){
             return;
         }
+        cryptController.encryption(inPath,outPath,keyStr,cipherType,EncryptionController.DEC_MOD);
 
-        try {
-            cryptController.decryption(inPath, outPath,keyStr);
-            Alert alert = new Alert(Alert.AlertType.INFORMATION,"Готово!");
-            alert.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR,"Произошла ошибка во время выполнения операции!");
-            alert.show();
-        }
     }
 
     public void OnOpenFolder(ActionEvent actionEvent) {
@@ -159,5 +138,11 @@ public class UiController {
         return true;
     }
 
+    public void showSimpleAlert(Alert.AlertType type,String message){
+        Platform.runLater(() -> {
+            Alert alert = new Alert(type,message);
+            alert.show();
+        });
+    }
 
 }

@@ -3,31 +3,46 @@ package main.controller;
 import main.cipher.ICipher;
 import main.cipher.WakeCipher;
 
-import java.io.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EncryptionController {
     public static final int TYPE_WAKE = 0;
     public static final int TYPE_2 = 1;
     public static final int TYPE_3 = 2;
 
-    private int[] key = null;
+    public static final int ENC_MOD = 1;
+    public static final int DEC_MOD = 2;
 
-    private ICipher cipher;
+    private UiController uiController;
 
-    public void encryption(String inFile, String outFile, String key) throws IOException {
+    public EncryptionController(UiController uiController){
+        this.uiController = uiController;
+    }
+
+    public void encryption(String inFile, String outFile, String key, int cipherType, int mode) {
         int[] keyArr = getIntKey(key);
 
-        cipher.encryption(keyArr, new DataInputStream(new FileInputStream(inFile)),
-                new DataOutputStream(new FileOutputStream(outFile)));
+        ICipher iCipher = null;
+        switch (cipherType){
+            case TYPE_WAKE:
+                iCipher = new WakeCipher();
+        }
+        if (iCipher==null){
+            return;
+        }
+        iCipher.setKey(keyArr);
+        iCipher.setInPath(inFile);
+        iCipher.setOutPath(outFile);
+        iCipher.setMode(mode);
+        iCipher.setUiController(uiController);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(iCipher);
+        executorService.shutdown();
 
     }
 
-    public void decryption(String inFile, String outFile, String key) throws IOException {
-        int[] keyArr = getIntKey(key);
-        cipher.decryption(keyArr, new DataInputStream(new FileInputStream(inFile)),
-                new DataOutputStream(new FileOutputStream(outFile)));
-
-    }
 
     public int[] getIntKey(String key) {
         char c;
@@ -40,10 +55,4 @@ public class EncryptionController {
     }
 
 
-    public void setType(int cryptType) {
-        switch (cryptType) {
-            case TYPE_WAKE:
-                cipher = new WakeCipher();
-        }
-    }
 }

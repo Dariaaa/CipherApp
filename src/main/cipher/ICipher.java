@@ -1,12 +1,32 @@
 package main.cipher;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import main.controller.UiController;
 
-public interface ICipher {
+public abstract class ICipher implements Runnable {
 
-    void decryption(int[] keyArr, DataInputStream in, DataOutputStream out) throws IOException;
+    public void setKey(int[] key) {
+        this.key = key;
+    }
 
-    void encryption(int[] keyArr, DataInputStream in, DataOutputStream out) throws IOException;
+    public void setInPath(String inPath) {
+        this.inPath = inPath;
+    }
+
+    public void setOutPath(String outPath) {
+        this.outPath = outPath;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    public void setUiController(UiController uiController) {
+        this.uiController = uiController;
+    }
+
+    protected int[] key;
+    protected String inPath;
+    protected String outPath;
+    protected int mode;
+    protected UiController uiController;
 }
