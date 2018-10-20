@@ -2,7 +2,6 @@ package main.cipher;
 
 import javafx.scene.control.Alert;
 import main.controller.EncryptionController;
-import main.controller.UiController;
 import main.util.DataStreamUtil;
 
 import java.io.*;
@@ -25,28 +24,28 @@ public class WakeCipher extends ICipher {
         int[] table = new int[257];
         int x, z;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {       //копируем первые 4 слова ключа
             table[i] = key[i];
         }
         for (int i = 4; i < 256; i++) {
-            x = table[i - 4] + table[i - 1];
+            x = table[i - 4] + table[i - 1];    //преобразовываем в цикле
             table[i] = (x >>> 3) ^ s[x & 7];
         }
 
-        for (int i = 0; i < 23; i++) {
+        for (int i = 0; i < 23; i++) {      //производим суммирование
             table[i] += table[i + 89];
         }
-        x = table[33];
+        x = table[33];                      //определяем вспомогательные переменные
         z = table[59] | 0x01000001;
         z = z & 0xff7fffff;
 
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {         //перестановка в первом байте слов таблицы
             x = (x & 0xff7fffff) + z;
             table[i] = table[i] & 0x00ffffff ^ x;
         }
-        table[256] = table[0];
+        table[256] = table[0];                  //инициализация следующих переменных
         x &= 255;
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {     //перемешаем между собой слова из таблицы
             table[i] = table[x = (table[i ^ x] ^ x) & 255];
         }
         return table;
@@ -54,18 +53,24 @@ public class WakeCipher extends ICipher {
 
     private void encryption(int mod, DataInputStream in, DataOutputStream out, int[] key) throws IOException {
         int table[] = generationSbox(key);
-        int a = key[0];
+
+
+
+        int a = key[0];         //сохраняем первые 4 слова ключа в переменные
         int b = key[1];
         int c = key[2];
         int d = key[3];
-        Integer data = DataStreamUtil.getWordFromFile(in);
-        while (data != null) {
-            int outData = d ^ data;
 
-            DataStreamUtil.saveWordToFile(outData, out);
-            if (mod == EncryptionController.ENC_MOD) {
+        Integer data = DataStreamUtil.getWordFromFile(in);      //читаем символ из файла
+        while (data != null) {
+            int outData = d ^ data;                             //производим шифрование (сложение по модулю 2)
+
+            DataStreamUtil.saveWordToFile(outData, out);        //сохраняем слово в файл
+                                                                //слова в ключевой последовательности
+                                                                //определяются значениями крайнего регистра
+            if (mod == EncryptionController.ENC_MOD) {          //если шифруем
                 a = functionM(a, outData, table);
-            } else {
+            } else {                                            //если дешифруем
                 a = functionM(a, data, table);
             }
             b = functionM(b, a, table);
@@ -84,6 +89,7 @@ public class WakeCipher extends ICipher {
     @Override
     public void run() {
         try {
+
             encryption(mode, new DataInputStream(new FileInputStream(inPath)),
                     new DataOutputStream(new FileOutputStream(outPath)), key);
 

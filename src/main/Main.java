@@ -13,7 +13,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("view/RootPage.fxml"));
         primaryStage.setScene(new Scene(root));
-        primaryStage.setTitle("Прога для шифрования");
+        primaryStage.setTitle("");
         primaryStage.setResizable(false);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("view/icon.png")));
         primaryStage.show();

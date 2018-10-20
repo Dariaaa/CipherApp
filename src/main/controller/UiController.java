@@ -120,6 +120,11 @@ public class UiController {
             alert.show();
             return false;
         }
+        if (Files.isDirectory(Paths.get(outPath))||Files.isDirectory(Paths.get(inPath))){
+            Alert alert = new Alert(Alert.AlertType.ERROR,"Некорректное название файла!");
+            alert.show();
+            return false;
+        }
         if (Files.exists(Paths.get(outPath))){
             Alert alert = new Alert(Alert.AlertType.WARNING,"Файл уже существует, перезаписать?",
                     ButtonType.CANCEL,ButtonType.OK);
